@@ -2639,6 +2639,19 @@ namespace jsonata {
                 {
                     return val.at(identifier_);
                 }
+                else if (val.is_array())
+                {
+                    auto result_ptr = resources.create_json(json_array_arg);
+                    for (reference item : val.array_range())
+                    {
+                        if (item.is_object() && item.contains(identifier_))
+                        {
+                            reference j = item.at(identifier_);
+                            result_ptr->emplace_back(json_const_pointer_arg, std::addressof(j));
+                        }
+                    }
+                    return *result_ptr;
+                }
                 else 
                 {
                     return resources.null_value();

@@ -99,6 +99,11 @@
                 "comment" : "No index is given to Phone so it selects all of them (the whole array), then it selects all the number fields for each of them",
                 "expression" : "Phone.number",
                 "result" : [ "0203 544 1234", "01962 001234", "01962 001235", "077 7700 1234" ]
+            },
+            {
+                "comment" : "Might expect it to just return the first number, but it returns the first number of each of the items selected by Phone",
+                "expression" : "Phone.number[0]",
+                "result" : [ "0203 544 1234", "01962 001234", "01962 001235", "077 7700 1234" ]
             }
         ]
     }

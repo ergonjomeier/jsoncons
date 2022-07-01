@@ -326,6 +326,7 @@ namespace jsonata {
         argument,
         expression_or_expression_type,
         quoted_string,
+        backticks_enclosed_string,
         raw_string,
         raw_string_escape_char,
         quoted_string_escape_char,
@@ -3571,16 +3572,22 @@ namespace jsonata {
                                 ++p_;
                                 ++column_;
                                 break;
+                            case '`':
+                                state_stack_.back() = path_state::val_expr;
+                                state_stack_.emplace_back(path_state::backticks_enclosed_string);
+                                ++p_;
+                                ++column_;
+                                break;
                             case '\'':
                                 state_stack_.back() = path_state::raw_string;
                                 ++p_;
                                 ++column_;
                                 break;
-                            case '`':
+                            /*case '`':
                                 state_stack_.back() = path_state::literal;
                                 ++p_;
                                 ++column_;
-                                break;
+                                break;*/
                             case '{':
                                 push_token(begin_multi_select_hash_arg, ec);
                                 if (ec) {return jsonata_expression();}
@@ -3654,6 +3661,12 @@ namespace jsonata {
                             case '\"':
                                 state_stack_.back() = path_state::val_expr;
                                 state_stack_.emplace_back(path_state::quoted_string);
+                                ++p_;
+                                ++column_;
+                                break;
+                            case '`':
+                                state_stack_.back() = path_state::val_expr;
+                                state_stack_.emplace_back(path_state::backticks_enclosed_string);
                                 ++p_;
                                 ++column_;
                                 break;
@@ -3808,6 +3821,21 @@ namespace jsonata {
                                 break;
                             case '\\':
                                 state_stack_.emplace_back(path_state::quoted_string_escape_char);
+                                ++p_;
+                                ++column_;
+                                break;
+                            default:
+                                buffer.push_back(*p_);
+                                ++p_;
+                                ++column_;
+                                break;
+                        };
+                        break;
+                    case path_state::backticks_enclosed_string: 
+                        switch (*p_)
+                        {
+                            case '`':
+                                state_stack_.pop_back(); // quoted_string
                                 ++p_;
                                 ++column_;
                                 break;

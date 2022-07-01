@@ -64,6 +64,41 @@
                 "comment" : "Field references are separated by '.'",
                 "expression" : "Address.City",
                 "result" : "Winchester"
+            },
+            {
+                "comment" : "Matched the path and returns the null value",
+                "expression" : "Other.Misc",
+                "result" : null
+            },
+            {
+                "comment" : "Field references containing whitespace or reserved tokens can be enclosed in backticks",
+                "expression" : "Other.`Over 18 ?`",
+                "result" : true
+            },
+            {
+                "comment" : "Returns the first item (an object)",
+                "expression" : "Phone[0]",
+                "result" : { "type": "home", "number": "0203 544 1234" }
+            },
+            {
+                "comment" : "Returns the second item",
+                "expression" : "Phone[1]",
+                "result" : { "type": "office", "number": "01962 001234" }
+            },
+            {
+                "comment" : "Returns the last item",
+                "expression" : "Phone[-1]",
+                "result" : { "type": "mobile", "number": "077 7700 1234" }
+            },
+            {
+                "comment" : "Negative indexed count from the end",
+                "expression" : "Phone[-2]",
+                "result" : { "type": "office", "number": "01962 001235" }
+            },
+            {
+                "comment" : "No index is given to Phone so it selects all of them (the whole array), then it selects all the number fields for each of them",
+                "expression" : "Phone.number",
+                "result" : [ "0203 544 1234", "01962 001234", "01962 001235", "077 7700 1234" ]
             }
         ]
     }

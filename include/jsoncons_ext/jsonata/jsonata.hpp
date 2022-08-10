@@ -2622,17 +2622,53 @@ namespace jsonata {
             }
         };
 
-        class identifier_selector final : public basic_expression
+        // projection_base
+        class projection_base : public expression_base
+        {
+        protected:
+            std::vector<std::unique_ptr<expression_base>> expressions_;
+        public:
+            projection_base(operator_kind oper)
+                : expression_base(oper, true)
+            {
+            }
+
+            void add_expression(std::unique_ptr<expression_base>&& expr) override
+            {
+                if (!expressions_.empty() && expressions_.back()->is_projection() && 
+                    (expr->precedence_level() < expressions_.back()->precedence_level() ||
+                     (expr->precedence_level() == expressions_.back()->precedence_level() && expr->is_right_associative())))
+                {
+                    expressions_.back()->add_expression(std::move(expr));
+                }
+                else
+                {
+                    expressions_.emplace_back(std::move(expr));
+                }
+            }
+
+            reference apply_expressions(reference val, dynamic_resources<Json,JsonReference>& resources, std::error_code& ec) const
+            {
+                pointer ptr = std::addressof(val);
+                for (auto& expression : expressions_)
+                {
+                    ptr = std::addressof(expression->evaluate(*ptr, resources, ec));
+                }
+                return *ptr;
+            }
+        };
+
+        class identifier_selector final : public projection_base
         {
         private:
             string_type identifier_;
         public:
             identifier_selector(const string_view_type& name)
-                : identifier_(name)
+                : projection_base(operator_kind::projection_op), identifier_(name)
             {
             }
 
-            reference evaluate(reference val, dynamic_resources<Json,JsonReference>& resources, std::error_code&) const override
+            reference evaluate(reference val, dynamic_resources<Json,JsonReference>& resources, std::error_code& ec) const override
             {
                 //std::cout << "(identifier_selector " << identifier_  << " ) " << pretty_print(val) << "\n";
                 if (val.is_object() && val.contains(identifier_))
@@ -2646,8 +2682,13 @@ namespace jsonata {
                     {
                         if (item.is_object() && item.contains(identifier_))
                         {
-                            reference j = item.at(identifier_);
-                            result_ptr->emplace_back(json_const_pointer_arg, std::addressof(j));
+                            reference ref = item.at(identifier_);
+                            reference j = this->apply_expressions(ref, resources, ec);
+                            if (!j.is_null())
+                            {
+                                result_ptr->emplace_back(json_const_pointer_arg, std::addressof(j));
+                            }
+                            //result_ptr->emplace_back(json_const_pointer_arg, std::addressof(j));
                         }
                     }
                     return *result_ptr;
@@ -2708,8 +2749,9 @@ namespace jsonata {
             {
                 if (!val.is_array())
                 {
-                    return resources.null_value();
+                    return index_ == 0 ? val : resources.null_value();
                 }
+
                 int64_t slen = static_cast<int64_t>(val.size());
                 if (index_ >= 0 && index_ < slen)
                 {
@@ -2737,42 +2779,6 @@ namespace jsonata {
                 s.append("index_selector ");
                 s.append(std::to_string(index_));
                 return s;
-            }
-        };
-
-        // projection_base
-        class projection_base : public expression_base
-        {
-        protected:
-            std::vector<std::unique_ptr<expression_base>> expressions_;
-        public:
-            projection_base(operator_kind oper)
-                : expression_base(oper, true)
-            {
-            }
-
-            void add_expression(std::unique_ptr<expression_base>&& expr) override
-            {
-                if (!expressions_.empty() && expressions_.back()->is_projection() && 
-                    (expr->precedence_level() < expressions_.back()->precedence_level() ||
-                     (expr->precedence_level() == expressions_.back()->precedence_level() && expr->is_right_associative())))
-                {
-                    expressions_.back()->add_expression(std::move(expr));
-                }
-                else
-                {
-                    expressions_.emplace_back(std::move(expr));
-                }
-            }
-
-            reference apply_expressions(reference val, dynamic_resources<Json,JsonReference>& resources, std::error_code& ec) const
-            {
-                pointer ptr = std::addressof(val);
-                for (auto& expression : expressions_)
-                {
-                    ptr = std::addressof(expression->evaluate(*ptr, resources, ec));
-                }
-                return *ptr;
             }
         };
 

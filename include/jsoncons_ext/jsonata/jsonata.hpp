@@ -2673,7 +2673,8 @@ namespace jsonata {
                 //std::cout << "(identifier_selector " << identifier_  << " ) " << pretty_print(val) << "\n";
                 if (val.is_object() && val.contains(identifier_))
                 {
-                    return val.at(identifier_);
+                    reference j = this->apply_expressions(val.at(identifier_), resources, ec);
+                    return j;
                 }
                 else if (val.is_array())
                 {

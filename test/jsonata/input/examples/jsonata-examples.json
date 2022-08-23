@@ -59,12 +59,12 @@
                 "comment" : "Returns a JSON number",
                 "expression" : "Age",
                 "result" : 28
-            },*/
+            },
             {
                 "comment" : "Field references are separated by '.'",
                 "expression" : "Address.City",
                 "result" : "Winchester"
-            }/*,
+            },
             {
                 "comment" : "Matched the path and returns the null value",
                 "expression" : "Other.Misc",
@@ -104,7 +104,12 @@
                 "comment" : "Might expect it to just return the first number, but it returns the first number of each of the items selected by Phone",
                 "expression" : "Phone.number[0]",
                 "result" : [ "0203 544 1234", "01962 001234", "01962 001235", "077 7700 1234" ]
-            }*/
+            },*/
+            {
+                "comment" : "Applies the index to the array returned by Phone.number. One use of parentheses.",
+                "expression" : "(Phone.number)[0]",
+                "result" : "0203 544 1234"
+            }
         ]
     }
 ]

@@ -3128,6 +3128,44 @@ namespace jsonata {
             }
         };
 
+        class group_selector : public basic_expression
+        {
+            std::vector<token> token_list_;
+        public:
+            group_selector(std::vector<token>&& token_list)
+                : token_list_(std::move(token_list))
+            {
+            }
+
+            reference evaluate(reference val, dynamic_resources<Json,JsonReference>& resources, std::error_code& ec) const override
+            {
+                if (val.is_null())
+                {
+                    return val;
+                }
+                pointer j = evaluate_tokens(val, token_list_, resources, ec);
+                return *j;
+            }
+
+            std::string to_string(std::size_t indent = 0) const override
+            {
+                std::string s;
+                for (std::size_t i = 0; i <= indent; ++i)
+                {
+                    s.push_back(' ');
+                }
+                s.append("group_selector\n");
+                for (auto& item : token_list_)
+                {
+                    std::string sss = item.to_string(indent+2);
+                    s.insert(s.end(), sss.begin(), sss.end());
+                    s.push_back('\n');
+                }
+                s.append("---\n");
+                return s;
+            }
+        };
+
         struct key_tokens
         {
             string_type key;
@@ -4868,11 +4906,28 @@ namespace jsonata {
             }
             if (it == operator_stack_.rend())
             {
+                ec = jmespath_errc::unbalanced_parentheses;
+                return;
+            }
+            ++it;
+            operator_stack_.erase(it.base(),operator_stack_.end());
+/*
+            std::vector<token> toks;
+            auto it = operator_stack_.rbegin();
+            while (it != operator_stack_.rend() && !it->is_lparen())
+            {
+                toks.emplace_back(std::move(*it));
+                ++it;
+            }
+            output_stack_.emplace_back(token(jsoncons::make_unique<group_selector>(std::move(toks))));
+            if (it == operator_stack_.rend())
+            {
                 ec = jsonata_errc::unbalanced_parentheses;
                 return;
             }
             ++it;
             operator_stack_.erase(it.base(),operator_stack_.end());
+*/
         }
 
         void push_token(token&& tok, std::error_code& ec)

@@ -21,11 +21,13 @@ struct jsoncons_aligned_storage
     };
 };
 
+
 template <typename T>
 class FreelistAllocator {
+
     union node {
         node* next;
-        typename jsoncons_aligned_storage<sizeof(T), alignof(T)>::type storage;
+        alignas(alignof(T)) unsigned char storage[sizeof(T)];
     };
 
     node* list = nullptr;

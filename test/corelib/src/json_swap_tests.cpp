@@ -17,7 +17,7 @@ void check_swap(const json& j1, const json& j2)
     json j3 = j1;
     json j4 = j2;
 
-    //j3.swap(j4);
+    j3.swap(j4);
     //CHECK(j1 == j4);
     //CHECK(j2 == j3);
 }

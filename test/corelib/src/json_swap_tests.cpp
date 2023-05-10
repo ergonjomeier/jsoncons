@@ -27,6 +27,8 @@ TEST_CASE("test_swap")
     //json j6 = "Small";
     json j7 = "String too large for small string";
 
+    json j3 = j7;
+
     //check_swap(j6);
 }
 

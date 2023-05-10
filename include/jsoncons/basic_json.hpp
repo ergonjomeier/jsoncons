@@ -673,19 +673,19 @@ namespace jsoncons {
             }
 
             long_string_storage(const long_string_storage& other)
-                : storage_kind_(other.storage_kind_), small_string_length_(0), tag_(other.tag_)
+                : storage_kind_(static_cast<uint8_t>(json_storage_kind::long_string_value)), small_string_length_(0), tag_(other.tag_)
             {
                 ptr_ = heap_string_factory_type::create(other.data(), other.length(), null_type(), other.get_allocator());
             }
 
             long_string_storage(const long_string_storage& other, const Allocator& alloc)
-                : storage_kind_(other.storage_kind_), small_string_length_(0), tag_(other.tag_)
+                : storage_kind_(static_cast<uint8_t>(json_storage_kind::long_string_value)), small_string_length_(0), tag_(other.tag_)
             {
                 ptr_ = heap_string_factory_type::create(other.data(), other.length(), null_type(), alloc);
             }
 
             long_string_storage(long_string_storage&& other)
-                : storage_kind_(other.storage_kind_), small_string_length_(0), tag_(other.tag_)
+                : storage_kind_(static_cast<uint8_t>(json_storage_kind::long_string_value)), small_string_length_(0), tag_(other.tag_)
             {
                 ptr_ = other.ptr_;
                 other.ptr_ = nullptr;
@@ -694,7 +694,7 @@ namespace jsoncons {
             }
 
             long_string_storage(long_string_storage&& other, const Allocator& alloc)
-                : storage_kind_(other.storage_kind_), small_string_length_(0), tag_(other.tag_)
+                : storage_kind_(static_cast<uint8_t>(json_storage_kind::long_string_value)), small_string_length_(0), tag_(other.tag_)
             {
                 if (other.get_allocator() == alloc)
                 {

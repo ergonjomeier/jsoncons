@@ -2503,6 +2503,8 @@ namespace jsoncons {
         {
             TypeR tmpR(std::move(other.cast<TypeR>())); 
             other.construct<TypeL>(cast<TypeL>());
+
+            Destroy_();
             construct<TypeR>(std::move(tmpR));
         }
 

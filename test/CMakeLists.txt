@@ -58,7 +58,8 @@ endif()
 
 target_include_directories (catch INTERFACE ${CATCH_INCLUDE_DIR})
 
-add_executable(corelib/src/json_swap_tests.cpp
+add_executable(unit_tests
+               corelib/src/json_swap_tests.cpp
                corelib/src/testmain.cpp
 )
 

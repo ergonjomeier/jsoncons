@@ -12,7 +12,7 @@
 
 using namespace jsoncons;
 
-void check_swap(const json& j1, const json& j2)
+void check_swap(const json& j1, const json&)
 {
     json j3 = j1;
     //json j4 = j2;

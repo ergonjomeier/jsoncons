@@ -111,10 +111,10 @@ public:
          options_(options), 
          alloc_(alloc),
          stack_(alloc),
-//#if !defined(JSONCONS_NO_MAP_CONS_TAKES_ALLOCATOR) 
+#if !defined(JSONCONS_NO_MAP_CONS_TAKES_ALLOCATOR) 
          stringref_map_(alloc),
          //bytestringref_map_(alloc),
-//#endif 
+#endif 
          nesting_depth_(0)        
     {
         if (options.pack_strings())

@@ -90,8 +90,8 @@ private:
     allocator_type alloc_;
 
     std::vector<stack_item,stack_item_allocator_type> stack_;
-    std::map<string_type,size_t,std::less<string_type>,string_size_allocator_type> stringref_map_;
-    std::map<byte_string_type,size_t,std::less<byte_string_type>,byte_string_size_allocator_type> bytestringref_map_;
+    //std::map<string_type,size_t,std::less<string_type>,string_size_allocator_type> stringref_map_;
+    //std::map<byte_string_type,size_t,std::less<byte_string_type>,byte_string_size_allocator_type> bytestringref_map_;
     std::size_t next_stringref_ = 0;
     int nesting_depth_;
 
@@ -101,19 +101,19 @@ private:
 public:
     explicit basic_cbor_encoder(Sink&& sink, 
                                 const Allocator& alloc = Allocator())
-       : basic_cbor_encoder(std::forward<Sink>(sink), cbor_encode_options(), alloc)
+       : basic_cbor_encoder(std::move(sink), cbor_encode_options(), alloc)
     {
     }
     basic_cbor_encoder(Sink&& sink, 
                        const cbor_encode_options& options, 
                        const Allocator& alloc = Allocator())
-       : sink_(std::forward<Sink>(sink)), 
+       : sink_(std::move(sink)), 
          options_(options), 
          alloc_(alloc),
          stack_(alloc),
 #if !defined(JSONCONS_NO_MAP_CONS_TAKES_ALLOCATOR) 
-         stringref_map_(alloc),
-         bytestringref_map_(alloc),
+         //stringref_map_(alloc),
+         //bytestringref_map_(alloc),
 #endif 
          nesting_depth_(0)        
     {
@@ -137,8 +137,8 @@ public:
     void reset()
     {
         stack_.clear();
-        stringref_map_.clear();
-        bytestringref_map_.clear();
+        //stringref_map_.clear();
+        //bytestringref_map_.clear();
         next_stringref_ = 0;
         nesting_depth_ = 0;
     }
@@ -362,16 +362,16 @@ private:
         if (options_.pack_strings() && sv.size() >= jsoncons::cbor::detail::min_length_for_stringref(next_stringref_))
         {
             string_type s(sv.data(), sv.size(), alloc_);
-            auto it = stringref_map_.find(s);
+            /* auto it = stringref_map_.find(s);
             if (it == stringref_map_.end())
             {
                 stringref_map_.emplace(std::make_pair(std::move(s), next_stringref_++));
                 write_utf8_string(sv);
             }
-            else
+            else*/
             {
                 write_tag(25);
-                write_uint64_value(it->second);
+                //write_uint64_value(it->second);
             }
         }
         else
@@ -904,16 +904,16 @@ private:
         if (options_.pack_strings() && b.size() >= jsoncons::cbor::detail::min_length_for_stringref(next_stringref_))
         {
             byte_string_type bs(b.data(), b.size(), alloc_);
-            auto it = bytestringref_map_.find(bs);
+            /*auto it = bytestringref_map_.find(bs);
             if (it == bytestringref_map_.end())
             {
                 bytestringref_map_.emplace(std::make_pair(bs, next_stringref_++));
                 write_byte_string_value(bs);
             }
-            else
+            else*/
             {
                 write_tag(25);
-                write_uint64_value(it->second);
+                //write_uint64_value(it->second);
             }
         }
         else
@@ -933,17 +933,17 @@ private:
         if (options_.pack_strings() && b.size() >= jsoncons::cbor::detail::min_length_for_stringref(next_stringref_))
         {
             byte_string_type bs(b.data(), b.size(), alloc_);
-            auto it = bytestringref_map_.find(bs);
+            /*auto it = bytestringref_map_.find(bs);
             if (it == bytestringref_map_.end())
             {
                 bytestringref_map_.emplace(std::make_pair(bs, next_stringref_++));
                 write_tag(ext_tag);
                 write_byte_string_value(bs);
             }
-            else
+            else*/
             {
                 write_tag(25);
-                write_uint64_value(it->second);
+                //write_uint64_value(it->second);
             }
         }
         else

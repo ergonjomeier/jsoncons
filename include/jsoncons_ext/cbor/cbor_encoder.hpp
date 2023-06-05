@@ -90,7 +90,7 @@ private:
     allocator_type alloc_;
 
     std::vector<stack_item,stack_item_allocator_type> stack_;
-    //std::map<string_type,size_t,std::less<string_type>,string_size_allocator_type> stringref_map_;
+    std::map<string_type,size_t,std::less<string_type>,string_size_allocator_type> stringref_map_;
     //std::map<byte_string_type,size_t,std::less<byte_string_type>,byte_string_size_allocator_type> bytestringref_map_;
     std::size_t next_stringref_ = 0;
     int nesting_depth_;
@@ -112,7 +112,7 @@ public:
          alloc_(alloc),
          stack_(alloc),
 #if !defined(JSONCONS_NO_MAP_CONS_TAKES_ALLOCATOR) 
-         //stringref_map_(alloc),
+         stringref_map_(alloc),
          //bytestringref_map_(alloc),
 #endif 
          nesting_depth_(0)        

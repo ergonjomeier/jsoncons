@@ -3856,20 +3856,6 @@ namespace jsoncons {
             }
         }
 
-        template <class CharContainer>
-        typename std::enable_if<extension_traits::is_back_insertable_char_container<CharContainer>::value>::type
-        dump_pretty(CharContainer& cont,
-            const basic_json_encode_options<char_type>& options = basic_json_encode_options<CharT>(),
-            indenting indent = indenting::no_indent) const
-        {
-            std::error_code ec;
-            dump_pretty(cont, options, indent, ec);
-            if (ec)
-            {
-                JSONCONS_THROW(ser_error(ec));
-            }
-        }
-
         void dump(std::basic_ostream<char_type>& os, 
             const basic_json_encode_options<char_type>& options = basic_json_encode_options<CharT>(),
             indenting indent = indenting::no_indent) const
@@ -3890,6 +3876,19 @@ namespace jsoncons {
         {
             basic_json_encoder<char_type,jsoncons::string_sink<CharContainer>> encoder(cont, options);
             dump(encoder, ec);
+        }
+
+        template <class CharContainer>
+        typename std::enable_if<extension_traits::is_back_insertable_char_container<CharContainer>::value>::type
+        dump_pretty(CharContainer& cont,
+            const basic_json_encode_options<char_type>& options = basic_json_encode_options<CharT>()) const
+        {
+            std::error_code ec;
+            dump_pretty(cont, options, ec);
+            if (ec)
+            {
+                JSONCONS_THROW(ser_error(ec));
+            }
         }
 
         template <class CharContainer>
